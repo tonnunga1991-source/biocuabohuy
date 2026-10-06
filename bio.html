@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GHUY</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { cursor: none; }
+    body {
+        background: #0a0a0f;
+        font-family: 'Inter', -apple-system, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        color: #e8edf5;
+        position: relative;
+        overflow-x: hidden;
+    }
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at 20% 30%, #1a1a4a 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, #4a1a4a 0%, transparent 50%);
+        z-index: -1;
+        animation: bgPulse 8s ease-in-out infinite alternate;
+    }
+    @keyframes bgPulse {
+        0% { opacity: 0.6; }
+        100% { opacity: 1; }
+    }
+
+    .card {
+        max-width: 400px;
+        width: 100%;
+        background: rgba(20, 25, 40, 0.75);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        padding: 32px 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        animation: fadeIn 0.6s ease;
+        position: relative;
+        z-index: 5;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar-wrap {
+        width: 130px; height: 130px;
+        margin: 0 auto 16px;
+        position: relative;
+        border-radius: 50%;
+        padding: 3px;
+        background: linear-gradient(45deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff, #ff0000);
+        background-size: 400% 400%;
+        animation: rainbowSpin 3s linear infinite;
+        box-shadow: 0 0 30px rgba(108, 155, 255, 0.5);
+    }
+    @keyframes rainbowSpin {
+        0%   { background-position: 0% 50%; }
+        100% { background-position: 400% 50%; }
+    }
+    .avatar {
+        width: 100%; height: 100%;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #0a0a0f;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .name {
+        font-size: 22px; font-weight: 700;
+        background: linear-gradient(135deg, #6c9bff, #a78bfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 4px;
+    }
+    .bio-text { font-size: 13px; color: #8899bb; margin-bottom: 24px; }
+
+    .link-btn {
+        display: flex; align-items: center; justify-content: center;
+        gap: 10px; width: 100%; padding: 14px; margin-bottom: 12px;
+        background: rgba(30, 40, 65, 0.7);
+        border: 1px solid rgba(108, 155, 255, 0.2);
+        border-radius: 14px; color: #e8edf5;
+        text-decoration: none; font-weight: 600; font-size: 15px;
+        transition: all 0.3s; position: relative; overflow: hidden;
+    }
+    .link-btn::before {
+        content: ''; position: absolute;
+        top: 0; left: -100%; width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(108, 155, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+    .link-btn:hover::before { left: 100%; }
+    .link-btn:hover { background: rgba(40, 55, 90, 0.9); transform: translateY(-2px); }
+    .link-btn .icon { font-size: 20px; }
+    .link-btn .label { flex: 1; text-align: left; }
+    .link-btn .arrow { color: #6c9bff; font-size: 18px; }
+
+    .ib-btn {
+        background: linear-gradient(135deg, #ff6b9d, #a78bfa);
+        border: 2px solid transparent; color: #fff; font-weight: 700;
+    }
+    .ib-btn:hover { animation: rainbowBorder 1.2s linear infinite; }
+    @keyframes rainbowBorder {
+        0%   { box-shadow: 0 0 0 2px #ff0000, 0 8px 24px rgba(255,0,0,0.4); }
+        16%  { box-shadow: 0 0 0 2px #ff8800, 0 8px 24px rgba(255,136,0,0.4); }
+        33%  { box-shadow: 0 0 0 2px #ffff00, 0 8px 24px rgba(255,255,0,0.4); }
+        50%  { box-shadow: 0 0 0 2px #00ff00, 0 8px 24px rgba(0,255,0,0.4); }
+        66%  { box-shadow: 0 0 0 2px #0088ff, 0 8px 24px rgba(0,136,255,0.4); }
+        83%  { box-shadow: 0 0 0 2px #8800ff, 0 8px 24px rgba(136,0,255,0.4); }
+        100% { box-shadow: 0 0 0 2px #ff0000, 0 8px 24px rgba(255,0,0,0.4); }
+    }
+
+    .toggle-meme {
+        display: flex; align-items: center; justify-content: center;
+        gap: 8px; width: 100%; padding: 10px; margin-top: 6px;
+        background: rgba(30, 40, 65, 0.5);
+        border: 1px solid rgba(255, 108, 157, 0.3);
+        border-radius: 12px; color: #ff8fb8;
+        font-weight: 600; font-size: 13px;
+        cursor: pointer; transition: 0.3s;
+    }
+    .toggle-meme:hover { background: rgba(255, 108, 157, 0.15); border-color: #ff6b9d; }
+    .toggle-meme.off { color: #6a7a9a; border-color: rgba(108, 155, 255, 0.15); }
+
+    .footer {
+        margin-top: 20px; padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 12px; color: #6a7a9a;
+    }
+    .footer .brand {
+        display: block; font-weight: 700; font-size: 14px;
+        background: linear-gradient(135deg, #6c9bff, #a78bfa, #ff6b9d);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 2px; margin-top: 4px;
+    }
+
+    .cursor-dot {
+        position: fixed; width: 8px; height: 8px;
+        background: #fff; border-radius: 50%;
+        pointer-events: none; z-index: 9999;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 12px #6c9bff, 0 0 20px #a78bfa;
+    }
+
+    .kb-meme {
+        position: fixed; width: 60px; height: 60px;
+        border-radius: 50%; object-fit: cover;
+        pointer-events: none; z-index: 9998;
+        transform: translate(-50%, -50%);
+        opacity: 0; transition: opacity 0.3s;
+        border: 2px solid #ff6b9d;
+        box-shadow: 0 0 15px rgba(255, 107, 157, 0.6);
+    }
+    .kb-meme.show { opacity: 1; }
+
+    .sakura {
+        position: fixed;
+        top: -30px;
+        pointer-events: none;
+        z-index: 1;
+        animation: sakuraFall linear infinite;
+        will-change: transform, opacity;
+    }
+    @keyframes sakuraFall {
+        0% {
+            transform: translateY(0) rotate(0deg) translateX(0);
+            opacity: 0;
+        }
+        8% { opacity: 1; }
+        50% {
+            transform: translateY(50vh) rotate(360deg) translateX(40px);
+            opacity: 1;
+        }
+        92% { opacity: 1; }
+        100% {
+            transform: translateY(110vh) rotate(720deg) translateX(-30px);
+            opacity: 0;
+        }
+    }
+
+    .sparkle {
+        position: fixed; width: 2px; height: 2px;
+        background: #fff; border-radius: 50%;
+        pointer-events: none;
+        animation: sparkleAnim 3s linear infinite;
+    }
+    @keyframes sparkleAnim {
+        0% { opacity: 0; transform: translateY(0); }
+        50% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-100px); }
+    }
+
+    .dragon {
+        position: fixed;
+        pointer-events: none;
+        z-index: 4;
+        filter: drop-shadow(0 0 15px #00ccff) drop-shadow(0 0 30px #0088ff);
+        will-change: transform;
+    }
+
+    @media (max-width: 480px) {
+        .card { padding: 24px 18px; }
+        .name { font-size: 20px; }
+        .avatar-wrap { width: 110px; height: 110px; }
+        .kb-meme { width: 45px; height: 45px; }
+    }
+</style>
+</head>
+<body>
+<div class="card">
+    <div class="avatar-wrap">
+        <div class="avatar">
+            <img src="https://www.anhnghethuatdulich.com/wp-content/uploads/2025/09/anh-kha-banh-5-nguoi.jpg" alt="GHUY" />
+        </div>
+    </div>
+    <div class="name">GHUY</div>
+    <div class="bio-text">Ẩn danh</div>
+
+    <a class="link-btn" href="https://www.tiktok.com/@htgh12" target="_blank">
+        <span class="icon">🎵</span>
+        <span class="label">TikTok • @htgh12</span>
+        <span class="arrow">→</span>
+    </a>
+
+    <a class="link-btn" href="https://www.facebook.com/profile.php?id=61594065000311" target="_blank">
+        <span class="icon">📘</span>
+        <span class="label">Facebook</span>
+        <span class="arrow">→</span>
+    </a>
+
+    <a class="link-btn ib-btn" href="https://www.facebook.com/profile.php?id=61594065000311" target="_blank">
+        <span class="icon">💳</span>
+        <span class="label">Mua / Đặt slide – IB</span>
+        <span class="arrow">→</span>
+    </a>
+
+    <button class="toggle-meme" id="toggleMeme">🖼️ Meme Khá Bảnh: BẬT</button>
+
+    <div class="footer">
+        © 2026
+        <span class="brand">@GHUY</span>
+    </div>
+</div>
+
+<div class="cursor-dot" id="cursorDot"></div>
+
+<script>
+    // ============ MEME KHÁ BẢNH ============
+    const KB_IMG = 'https://www.anhnghethuatdulich.com/wp-content/uploads/2025/09/anh-kha-banh-5-nguoi.jpg';
+    let memeEnabled = true;
+
+    const kbPool = [];
+    for (let i = 0; i < 8; i++) {
+        const img = document.createElement('img');
+        img.className = 'kb-meme';
+        img.src = KB_IMG;
+        document.body.appendChild(img);
+        kbPool.push({
+            el: img,
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+            rot: Math.random() * 360,
+            speed: 0.12 + Math.random() * 0.08
+        });
+    }
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        const dot = document.getElementById('cursorDot');
+        dot.style.left = mouseX + 'px';
+        dot.style.top = mouseY + 'px';
+    });
+
+    function animateMeme() {
+        if (memeEnabled) {
+            let leaderX = mouseX, leaderY = mouseY;
+            kbPool.forEach((kb, i) => {
+                kb.x += (leaderX - kb.x) * kb.speed;
+                kb.y += (leaderY - kb.y) * kb.speed;
+                kb.rot += 3;
+                kb.el.style.left = kb.x + 'px';
+                kb.el.style.top = kb.y + 'px';
+                kb.el.style.transform = `translate(-50%, -50%) rotate(${kb.rot}deg) scale(${1 - i * 0.08})`;
+                kb.el.classList.add('show');
+                leaderX = kb.x; leaderY = kb.y;
+            });
+        } else {
+            kbPool.forEach(kb => kb.el.classList.remove('show'));
+        }
+        requestAnimationFrame(animateMeme);
+    }
+    animateMeme();
+
+    const toggleBtn = document.getElementById('toggleMeme');
+    toggleBtn.addEventListener('click', () => {
+        memeEnabled = !memeEnabled;
+        toggleBtn.textContent = memeEnabled ? '🖼️ Meme Khá Bảnh: BẬT' : '🖼️ Meme Khá Bảnh: TẮT';
+        toggleBtn.classList.toggle('off', !memeEnabled);
+    });
+
+    // ============ HOA ANH ĐÀO (RƠI NHIỀU) ============
+    function createSakura() {
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const size = 14 + Math.random() * 14;
+
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('width', size);
+        svg.setAttribute('height', size);
+        svg.setAttribute('viewBox', '0 0 100 100');
+
+        const colors = [
+            { petal: '#ffd1dc', stroke: '#ff9aac' },
+            { petal: '#ffb7c5', stroke: '#ff7a95' },
+            { petal: '#ffc0cb', stroke: '#ff8fa3' },
+            { petal: '#ffa8b8', stroke: '#ff5f7d' }
+        ];
+        const c = colors[Math.floor(Math.random() * colors.length)];
+
+        const center = 50;
+        for (let i = 0; i < 5; i++) {
+            const angle = (i * 72) * Math.PI / 180;
+            const petal = document.createElementNS(svgNS, 'ellipse');
+            const px = center + Math.cos(angle) * 20;
+            const py = center + Math.sin(angle) * 20;
+            petal.setAttribute('cx', px);
+            petal.setAttribute('cy', py);
+            petal.setAttribute('rx', '16');
+            petal.setAttribute('ry', '12');
+            petal.setAttribute('fill', c.petal);
+            petal.setAttribute('stroke', c.stroke);
+            petal.setAttribute('stroke-width', '1');
+            petal.setAttribute('opacity', '0.95');
+            petal.setAttribute('transform', `rotate(${i * 72} ${px} ${py})`);
+            svg.appendChild(petal);
+        }
+
+        const center1 = document.createElementNS(svgNS, 'circle');
+        center1.setAttribute('cx', '50');
+        center1.setAttribute('cy', '50');
+        center1.setAttribute('r', '6');
+        center1.setAttribute('fill', '#ffeb99');
+        svg.appendChild(center1);
+
+        for (let i = 0; i < 6; i++) {
+            const a = (i * 60) * Math.PI / 180;
+            const dot = document.createElementNS(svgNS, 'circle');
+            dot.setAttribute('cx', 50 + Math.cos(a) * 4);
+            dot.setAttribute('cy', 50 + Math.sin(a) * 4);
+            dot.setAttribute('r', '1.5');
+            dot.setAttribute('fill', '#ffcc33');
+            svg.appendChild(dot);
+        }
+
+        const flower = document.createElement('div');
+        flower.className = 'sakura';
+        flower.appendChild(svg);
+        flower.style.left = Math.random() * 100 + 'vw';
+        const dur = 6 + Math.random() * 6;
+        flower.style.animationDuration = dur + 's';
+        flower.style.animationDelay = Math.random() * 3 + 's';
+
+        document.body.appendChild(flower);
+        setTimeout(() => flower.remove(), (dur + 3) * 1000);
+    }
+
+    setInterval(createSakura, 60);
+    for (let i = 0; i < 60; i++) setTimeout(createSakura, i * 40);
+
+    // ============ SPARKLE ============
+    function createSparkle() {
+        const s = document.createElement('div');
+        s.className = 'sparkle';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        s.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        document.body.appendChild(s);
+        setTimeout(() => s.remove(), 3000);
+    }
+    setInterval(createSparkle, 300);
+
+    // ============ RỒNG XANH (EMOJI STYLE) ============
+    function createDragonSVG() {
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('viewBox', '0 0 200 120');
+        svg.setAttribute('width', '150');
+        svg.setAttribute('height', '90');
+
+        // Gradient xanh
+        const defs = document.createElementNS(svgNS, 'defs');
+        const grad = document.createElementNS(svgNS, 'linearGradient');
+        const gid = 'blue' + Math.random().toString(36).slice(2);
+        grad.setAttribute('id', gid);
+        grad.setAttribute('x1', '0%'); grad.setAttribute('y1', '0%');
+        grad.setAttribute('x2', '100%'); grad.setAttribute('y2', '100%');
+        const s1 = document.createElementNS(svgNS, 'stop');
+        s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', '#a0e9ff');
+        const s2 = document.createElementNS(svgNS, 'stop');
+        s2.setAttribute('offset', '50%'); s2.setAttribute('stop-color', '#33ccff');
+        const s3 = document.createElementNS(svgNS, 'stop');
+        s3.setAttribute('offset', '100%'); s3.setAttribute('stop-color', '#0066cc');
+        grad.appendChild(s1); grad.appendChild(s2); grad.appendChild(s3);
+        defs.appendChild(grad);
+        svg.appendChild(defs);
+
+        const blue = `url(#${gid})`;
+
+        // Cánh rồng (phía sau)
+        const wing1 = document.createElementNS(svgNS, 'path');
+        wing1.setAttribute('d', 'M70,50 Q50,10 20,30 Q40,45 55,55 Q30,60 15,80 Q45,75 70,60 Z');
+        wing1.setAttribute('fill', '#66ddff');
+        wing1.setAttribute('stroke', '#0066cc');
+        wing1.setAttribute('stroke-width', '1');
+        wing1.setAttribute('opacity', '0.85');
+        svg.appendChild(wing1);
+
+        const wing2 = document.createElementNS(svgNS, 'path');
+        wing2.setAttribute('d', 'M130,50 Q150,10 180,30 Q160,45 145,55 Q170,60 185,80 Q155,75 130,60 Z');
+        wing2.setAttribute('fill', '#66ddff');
+        wing2.setAttribute('stroke', '#0066cc');
+        wing2.setAttribute('stroke-width', '1');
+        wing2.setAttribute('opacity', '0.85');
+        svg.appendChild(wing2);
+
+        // Thân rồng uốn lượn
+        const body = document.createElementNS(svgNS, 'path');
+        body.setAttribute('d', 'M30,70 Q60,40 100,60 Q140,80 175,50');
+        body.setAttribute('stroke', blue);
+        body.setAttribute('stroke-width', '10');
+        body.setAttribute('fill', 'none');
+        body.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(body);
+
+        // Vảy sáng
+        const scalesPoints = [[45,60],[65,52],[85,55],[105,62],[125,68],[145,62],[160,55]];
+        scalesPoints.forEach(([x, y]) => {
+            const scale = document.createElementNS(svgNS, 'circle');
+            scale.setAttribute('cx', x);
+            scale.setAttribute('cy', y);
+            scale.setAttribute('r', '2.5');
+            scale.setAttribute('fill', '#e6faff');
+            scale.setAttribute('opacity', '0.9');
+            svg.appendChild(scale);
+        });
+
+        // Vây lưng
+        for (let i = 0; i < 8; i++) {
+            const x = 45 + i * 16;
+            const y = 58 - Math.sin(i * 0.7) * 15;
+            const spike = document.createElementNS(svgNS, 'path');
+            spike.setAttribute('d', `M${x},${y} L${x+3},${y-10} L${x+6},${y}`);
+            spike.setAttribute('fill', '#00aaff');
+            spike.setAttribute('stroke', '#0055aa');
+            spike.setAttribute('stroke-width', '0.5');
+            svg.appendChild(spike);
+        }
+
+        // Đầu rồng
+        const head = document.createElementNS(svgNS, 'ellipse');
+        head.setAttribute('cx', '28');
+        head.setAttribute('cy', '70');
+        head.setAttribute('rx', '16');
+        head.setAttribute('ry', '13');
+        head.setAttribute('fill', blue);
+        head.setAttribute('stroke', '#0055aa');
+        head.setAttribute('stroke-width', '1.5');
+        svg.appendChild(head);
+
+        // Mắt rồng (trắng + xanh đậm)
+        const eyeOuter = document.createElementNS(svgNS, 'circle');
+        eyeOuter.setAttribute('cx', '22');
+        eyeOuter.setAttribute('cy', '65');
+        eyeOuter.setAttribute('r', '4.5');
+        eyeOuter.setAttribute('fill', '#ffffff');
+        svg.appendChild(eyeOuter);
+
+        const eyePupil = document.createElementNS(svgNS, 'circle');
+        eyePupil.setAttribute('cx', '22');
+        eyePupil.setAttribute('cy', '65');
+        eyePupil.setAttribute('r', '2.5');
+        eyePupil.setAttribute('fill', '#001a33');
+        svg.appendChild(eyePupil);
+
+        // Sừng
+        const horn1 = document.createElementNS(svgNS, 'path');
+        horn1.setAttribute('d', 'M22,58 Q18,46 22,38');
+        horn1.setAttribute('stroke', blue);
+        horn1.setAttribute('stroke-width', '3');
+        horn1.setAttribute('fill', 'none');
+        horn1.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(horn1);
+
+        const horn2 = document.createElementNS(svgNS, 'path');
+        horn2.setAttribute('d', 'M32,58 Q32,46 36,38');
+        horn2.setAttribute('stroke', blue);
+        horn2.setAttribute('stroke-width', '3');
+        horn2.setAttribute('fill', 'none');
+        horn2.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(horn2);
+
+        // Râu
+        const whisker1 = document.createElementNS(svgNS, 'path');
+        whisker1.setAttribute('d', 'M15,78 Q5,85 8,95');
+        whisker1.setAttribute('stroke', blue);
+        whisker1.setAttribute('stroke-width', '1.8');
+        whisker1.setAttribute('fill', 'none');
+        svg.appendChild(whisker1);
+
+        const whisker2 = document.createElementNS(svgNS, 'path');
+        whisker2.setAttribute('d', 'M18,80 Q12,90 16,100');
+        whisker2.setAttribute('stroke', blue);
+        whisker2.setAttribute('stroke-width', '1.8');
+        whisker2.setAttribute('fill', 'none');
+        svg.appendChild(whisker2);
+
+        // Răng nanh
+        const fang = document.createElementNS(svgNS, 'path');
+        fang.setAttribute('d', 'M36,75 L38,82 L40,75');
+        fang.setAttribute('fill', '#fff');
+        fang.setAttribute('stroke', '#999');
+        fang.setAttribute('stroke-width', '0.5');
+        svg.appendChild(fang);
+
+        // Đuôi chẻ 3
+        const tail = document.createElementNS(svgNS, 'path');
+        tail.setAttribute('d', 'M175,50 Q190,40 195,55 M175,50 Q193,60 195,65 M175,50 Q185,65 190,70');
+        tail.setAttribute('stroke', blue);
+        tail.setAttribute('stroke-width', '5');
+        tail.setAttribute('fill', 'none');
+        tail.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(tail);
+
+        // Vây đuôi
+        const tailFin = document.createElementNS(svgNS, 'path');
+        tailFin.setAttribute('d', 'M175,50 Q188,35 196,45 Q190,52 196,60 Q188,65 175,50');
+        tailFin.setAttribute('fill', '#00aaff');
+        tailFin.setAttribute('opacity', '0.7');
+        svg.appendChild(tailFin);
+
+        return svg;
+    }
+
+    // 3 con rồng xanh bay quỹ đạo khác nhau
+    const dragons = [];
+    const dragonConfigs = [
+        { rx: 0.42, ry: 0.40, speed: 0.006, scale: 1.0, delay: 0 },
+        { rx: 0.38, ry: 0.45, speed: 0.009, scale: 0.75, delay: Math.PI },
+        { rx: 0.45, ry: 0.35, speed: 0.004, scale: 0.6, delay: Math.PI / 2 }
+    ];
+
+    dragonConfigs.forEach((cfg) => {
+        const el = document.createElement('div');
+        el.className = 'dragon';
+        el.appendChild(createDragonSVG());
+        document.body.appendChild(el);
+        dragons.push({
+            el: el,
+            angle: cfg.delay,
+            rx: cfg.rx,
+            ry: cfg.ry,
+            speed: cfg.speed,
+            scale: cfg.scale
+        });
+    });
+
+    function animateDragons() {
+        dragons.forEach(d => {
+            d.angle += d.speed;
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            const rx = window.innerWidth * d.rx;
+            const ry = window.innerHeight * d.ry;
+
+            const x = cx + Math.cos(d.angle) * rx;
+            const y = cy + Math.sin(d.angle * 1.5) * ry;
+
+            const nextAngle = d.angle + 0.05;
+            const nx = cx + Math.cos(nextAngle) * rx;
+            const ny = cy + Math.sin(nextAngle * 1.5) * ry;
+            const dx = nx - x;
+            const dy = ny - y;
+            const rot = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            d.el.style.left = x + 'px';
+            d.el.style.top = y + 'px';
+            d.el.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(${d.scale})`;
+        });
+        requestAnimationFrame(animateDragons);
+    }
+    animateDragons();
+
+    document.addEventListener('mouseleave', () => {
+        document.getElementById('cursorDot').style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', () => {
+        document.getElementById('cursorDot').style.opacity = '1';
+    });
+</script>
+</body>
+</html>
